@@ -269,6 +269,9 @@
         <div id="dash-username" class="text-sm text-gray-400 mt-1"></div>
       </div>
       <nav class="flex-1 p-4 space-y-1">
+        <a href="#" onclick="switchTab('dashboard')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl transition text-gray-300 hover:bg-gray-800" data-tab="dashboard">
+          <span>🏠</span> Dashboard
+        </a>
         <a href="#" onclick="switchTab('contratos')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl transition text-gray-300 hover:bg-gray-800" data-tab="contratos">
           <span>📄</span> Contratos
         </a>
@@ -357,6 +360,114 @@
           </div>
         </div>
 
+        <!-- TAB: Dashboard -->
+        <div id="tab-dashboard" class="tab-content">
+          <div class="space-y-5">
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                <div class="text-xs text-gray-400 mb-1 uppercase tracking-wide">Contratos</div>
+                <div class="text-3xl font-black text-green-600" id="db-total-contratos">0</div>
+                <div class="text-xs text-gray-400 mt-1">gerados no total</div>
+              </div>
+              <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                <div class="text-xs text-gray-400 mb-1 uppercase tracking-wide">Clientes</div>
+                <div class="text-3xl font-black text-blue-600" id="db-total-clientes">0</div>
+                <div class="text-xs text-gray-400 mt-1">cadastrados</div>
+              </div>
+              <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                <div class="text-xs text-gray-400 mb-1 uppercase tracking-wide">Recibos</div>
+                <div class="text-3xl font-black text-orange-500" id="db-total-recibos">0</div>
+                <div class="text-xs text-gray-400 mt-1">emitidos</div>
+              </div>
+              <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                <div class="text-xs text-gray-400 mb-1 uppercase tracking-wide">Cobranças</div>
+                <div class="text-3xl font-black text-purple-600" id="db-total-cobrancas">0</div>
+                <div class="text-xs text-gray-400 mt-1">registradas</div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="bg-green-600 rounded-2xl p-5 text-white">
+                <div class="text-xs text-green-200 mb-1 uppercase tracking-wide">Total recebido</div>
+                <div class="text-3xl font-black" id="db-total-recebido">R$0</div>
+                <div class="text-xs text-green-200 mt-1">cobranças com status Pago</div>
+              </div>
+              <div class="bg-yellow-500 rounded-2xl p-5 text-white">
+                <div class="text-xs text-yellow-100 mb-1 uppercase tracking-wide">A receber</div>
+                <div class="text-3xl font-black" id="db-total-pendente">R$0</div>
+                <div class="text-xs text-yellow-100 mt-1">cobranças pendentes/enviadas</div>
+              </div>
+              <div class="bg-red-500 rounded-2xl p-5 text-white">
+                <div class="text-xs text-red-200 mb-1 uppercase tracking-wide">Vencido</div>
+                <div class="text-3xl font-black" id="db-total-vencido">R$0</div>
+                <div class="text-xs text-red-200 mt-1">cobranças vencidas não pagas</div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                <div class="text-xs text-gray-400 uppercase tracking-wide mb-4">Mês atual</div>
+                <div class="space-y-3">
+                  <div class="flex justify-between items-center py-2 border-b border-gray-50">
+                    <span class="text-sm text-gray-600">Contratos criados</span>
+                    <span class="font-black text-gray-800" id="db-mes-contratos">0</span>
+                  </div>
+                  <div class="flex justify-between items-center py-2 border-b border-gray-50">
+                    <span class="text-sm text-gray-600">Cobranças enviadas</span>
+                    <span class="font-black text-gray-800" id="db-mes-cobrancas">0</span>
+                  </div>
+                  <div class="flex justify-between items-center py-2 border-b border-gray-50">
+                    <span class="text-sm text-gray-600">Recibos emitidos</span>
+                    <span class="font-black text-gray-800" id="db-mes-recibos">0</span>
+                  </div>
+                  <div class="flex justify-between items-center py-2 border-b border-gray-50">
+                    <span class="text-sm text-gray-600">Recebido no mês</span>
+                    <span class="font-black text-green-600" id="db-mes-recebido">R$0</span>
+                  </div>
+                  <div class="flex justify-between items-center py-2">
+                    <span class="text-sm text-gray-600">A receber no mês</span>
+                    <span class="font-black text-yellow-500" id="db-mes-pendente">R$0</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                <div class="text-xs text-gray-400 uppercase tracking-wide mb-4">Status das cobranças</div>
+                <div class="space-y-3">
+                  <div class="flex justify-between items-center py-2 border-b border-gray-50">
+                    <span class="flex items-center gap-2 text-sm text-gray-600"><span class="w-2 h-2 rounded-full bg-yellow-400 inline-block"></span>Pendentes</span>
+                    <div class="text-right"><span class="font-black text-gray-800" id="db-cob-pendente">0</span><span class="text-xs text-gray-400 ml-1">cob.</span></div>
+                  </div>
+                  <div class="flex justify-between items-center py-2 border-b border-gray-50">
+                    <span class="flex items-center gap-2 text-sm text-gray-600"><span class="w-2 h-2 rounded-full bg-blue-400 inline-block"></span>Enviadas</span>
+                    <div class="text-right"><span class="font-black text-gray-800" id="db-cob-enviada">0</span><span class="text-xs text-gray-400 ml-1">cob.</span></div>
+                  </div>
+                  <div class="flex justify-between items-center py-2 border-b border-gray-50">
+                    <span class="flex items-center gap-2 text-sm text-gray-600"><span class="w-2 h-2 rounded-full bg-green-500 inline-block"></span>Pagas</span>
+                    <div class="text-right"><span class="font-black text-gray-800" id="db-cob-pago">0</span><span class="text-xs text-gray-400 ml-1">cob.</span></div>
+                  </div>
+                  <div class="flex justify-between items-center py-2">
+                    <span class="flex items-center gap-2 text-sm text-gray-600"><span class="w-2 h-2 rounded-full bg-red-500 inline-block"></span>Vencidas</span>
+                    <div class="text-right"><span class="font-black text-red-600" id="db-cob-vencido">0</span><span class="text-xs text-gray-400 ml-1">cob.</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <div class="text-xs text-gray-400 uppercase tracking-wide mb-4">Próximos vencimentos (7 dias)</div>
+              <div id="db-proximos-vencimentos" class="space-y-2"></div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <div class="text-xs text-gray-400 uppercase tracking-wide mb-4">Últimos clientes</div>
+              <div id="db-ultimos-clientes" class="space-y-2"></div>
+            </div>
+
+          </div>
+        </div>
+
         <!-- TAB: Contratos -->
         <div id="tab-contratos" class="tab-content active">
           <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
@@ -419,13 +530,17 @@
               <div class="grid md:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Nome do cliente *</label>
-                  <input id="ct-cli-nome" type="text" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition">
+                  <input id="ct-cli-nome" type="text" oninput="autoPreencherCliente()" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Telefone do cliente *</label>
+                  <input id="ct-cli-tel" type="tel" placeholder="(11) 99999-9999" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition">
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">CPF do cliente *</label>
                   <input id="ct-cli-doc" type="text" placeholder="000.000.000-00" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition">
                 </div>
-                <div class="md:col-span-2">
+                <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Endereço do cliente *</label>
                   <input id="ct-cli-end" type="text" placeholder="Rua, número, cidade - UF" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition">
                 </div>
@@ -932,11 +1047,12 @@ function switchTab(tab) {
   document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
   document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
+  if (tab === 'dashboard') renderDashboard();
   if (tab === 'pedidos') renderListaPedidos();
   if (tab === 'renovacao') renderRenovacao();
   if (tab === 'cobrancas') preencherConfigMP();
   if (tab === 'clientes') renderListaClientes();
-  const titles = { contratos: 'Contratos', cobrancas: 'Cobranças', clientes: 'Clientes', recibos: 'Recibos', pedidos: 'Pedidos', renovacao: 'Minha assinatura' };
+  const titles = { dashboard: 'Dashboard', contratos: 'Contratos', cobrancas: 'Cobranças', clientes: 'Clientes', recibos: 'Recibos', pedidos: 'Pedidos', renovacao: 'Minha assinatura' };
   document.getElementById('dash-title').textContent = titles[tab];
   const sb = document.getElementById('sidebar');
   if (window.innerWidth < 768 && sb && !sb.classList.contains('hidden')) {
@@ -959,7 +1075,8 @@ function initDashboard() {
   renderListaRecibos();
   popularSelectsCliente();
   renderListaPedidos();
-  switchTab('contratos');
+  renderDashboard();
+  switchTab('dashboard');
 }
 
 function preencherCamposUsuario() {
@@ -979,6 +1096,7 @@ function atualizarStats() {
   document.getElementById('stat-recibos').textContent = recibos.length;
   atualizarResumoMes();
   verificarVencimentos();
+  renderDashboard();
 }
 
 let currentStep = 1;
@@ -1044,6 +1162,18 @@ function updateProgressBar() {
   });
 }
 
+function autoPreencherCliente() {
+  const nome = document.getElementById('ct-cli-nome').value.trim();
+  if (!nome) return;
+  const clientes = getData('clientes', []);
+  const found = clientes.find(c => c.nome.toLowerCase() === nome.toLowerCase());
+  if (found) {
+    if (found.tel) document.getElementById('ct-cli-tel').value = found.tel;
+    if (found.cpf) document.getElementById('ct-cli-doc').value = found.cpf;
+    if (found.end) document.getElementById('ct-cli-end').value = found.end;
+  }
+}
+
 function getContratoData() {
   return {
     prestNome: document.getElementById('ct-prest-nome').value,
@@ -1051,6 +1181,7 @@ function getContratoData() {
     prestEnd: document.getElementById('ct-prest-end').value,
     prestTel: document.getElementById('ct-prest-tel').value,
     cliNome: document.getElementById('ct-cli-nome').value,
+    cliTel: document.getElementById('ct-cli-tel').value,
     cliDoc: document.getElementById('ct-cli-doc').value,
     cliEnd: document.getElementById('ct-cli-end').value,
     desc: document.getElementById('ct-desc').value,
@@ -1074,7 +1205,7 @@ function renderPreviewContrato() {
   document.getElementById('contrato-preview').innerHTML = `
     <div class="text-center font-bold text-lg mb-4">CONTRATO DE PRESTAÇÃO DE SERVIÇOS</div>
     <div class="mb-3"><b>CONTRATADO (Prestador):</b> ${d.prestNome} — CPF/CNPJ: ${d.prestDoc} — ${d.prestEnd} — Tel: ${d.prestTel}</div>
-    <div class="mb-3"><b>CONTRATANTE (Cliente):</b> ${d.cliNome} — CPF: ${d.cliDoc} — ${d.cliEnd}</div>
+    <div class="mb-3"><b>CONTRATANTE (Cliente):</b> ${d.cliNome} — CPF: ${d.cliDoc} — Tel: ${d.cliTel} — ${d.cliEnd}</div>
     <div class="mb-2"><b>OBJETO:</b> ${d.desc}</div>
     <div class="mb-2"><b>VALOR:</b> R$ ${parseFloat(d.valor).toFixed(2).replace('.', ',')} — Forma de pagamento: ${d.pgto}</div>
     <div class="mb-2"><b>PRAZO:</b> Início em ${formatDate(d.inicio)}, entrega prevista em ${formatDate(d.entrega)}. Prazo para pagamento: ${d.prazo} dias após a entrega.</div>
@@ -1124,7 +1255,7 @@ function gerarContratosPDF() {
   }
 
   section('PARTES', `CONTRATADO: ${d.prestNome}\nCPF/CNPJ: ${d.prestDoc} | Endereço: ${d.prestEnd} | Tel: ${d.prestTel}`);
-  section('', `CONTRATANTE: ${d.cliNome}\nCPF: ${d.cliDoc} | Endereço: ${d.cliEnd}`);
+  section('', `CONTRATANTE: ${d.cliNome}\nCPF: ${d.cliDoc} | Tel: ${d.cliTel} | Endereço: ${d.cliEnd}`);
   doc.line(15, y, 195, y); y += 6;
   section('CLÁUSULA 1ª — OBJETO', d.desc);
   section('CLÁUSULA 2ª — VALOR E PAGAMENTO', `O valor total pelos serviços é de R$ ${parseFloat(d.valor).toFixed(2).replace('.', ',')} (${numPorExtenso(parseFloat(d.valor))}).\nForma de pagamento: ${d.pgto}.\nPrazo para pagamento: ${d.prazo} dias após a entrega do serviço.`);
@@ -1226,7 +1357,7 @@ function salvarContrato() {
       id: contratoId + 100,
       nome: d.cliNome,
       cpf: d.cliDoc,
-      tel: '',
+      tel: d.cliTel || '',
       email: '',
       end: d.cliEnd,
       obs: 'Cadastrado automaticamente ao salvar contrato',
@@ -1930,12 +2061,106 @@ function simularRenovacao() {
   showToast('Renovação registrada! Próxima em ' + proxima.toLocaleDateString('pt-BR'));
 }
 
+function renderDashboard() {
+  const contratos = getData('contratos', []);
+  const cobrancas = getData('cobrancas', []);
+  const clientes = getData('clientes', []);
+  const recibos = getData('recibos', []);
+
+  const fmt = v => 'R$' + parseFloat(v||0).toFixed(2).replace('.',',');
+  const agora = new Date();
+  const mes = agora.getMonth(), ano = agora.getFullYear();
+
+  function doParseMes(dataStr) {
+    if (!dataStr) return null;
+    const parts = dataStr.split('/');
+    if (parts.length === 3) return new Date(parts[2], parts[1]-1, parts[0]);
+    return new Date(dataStr);
+  }
+
+  const totalRecebido = cobrancas.filter(c=>c.status==='Pago').reduce((s,c)=>s+parseFloat(c.valor||0),0);
+  const totalPendente = cobrancas.filter(c=>c.status==='Pendente'||c.status==='Enviado').reduce((s,c)=>s+parseFloat(c.valor||0),0);
+  const totalVencido  = cobrancas.filter(c=>c.status==='Vencido').reduce((s,c)=>s+parseFloat(c.valor||0),0);
+
+  const set = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+  set('db-total-contratos', contratos.length);
+  set('db-total-clientes',  clientes.length);
+  set('db-total-recibos',   recibos.length);
+  set('db-total-cobrancas', cobrancas.length);
+  set('db-total-recebido',  fmt(totalRecebido));
+  set('db-total-pendente',  fmt(totalPendente));
+  set('db-total-vencido',   fmt(totalVencido));
+
+  set('db-cob-pendente', cobrancas.filter(c=>c.status==='Pendente').length);
+  set('db-cob-enviada',  cobrancas.filter(c=>c.status==='Enviado').length);
+  set('db-cob-pago',     cobrancas.filter(c=>c.status==='Pago').length);
+  set('db-cob-vencido',  cobrancas.filter(c=>c.status==='Vencido').length);
+
+  const ctMes   = contratos.filter(c=>{ const d=doParseMes(c.data); return d&&d.getMonth()===mes&&d.getFullYear()===ano; }).length;
+  const cbMes   = cobrancas.filter(c=>{ const d=doParseMes(c.data); return d&&d.getMonth()===mes&&d.getFullYear()===ano; });
+  const rcMes   = recibos.filter(r=>{ const d=doParseMes(r.dataGer); return d&&d.getMonth()===mes&&d.getFullYear()===ano; }).length;
+  const recMes  = cbMes.filter(c=>c.status==='Pago').reduce((s,c)=>s+parseFloat(c.valor||0),0);
+  const pendMes = cbMes.filter(c=>c.status!=='Pago').reduce((s,c)=>s+parseFloat(c.valor||0),0);
+  set('db-mes-contratos', ctMes);
+  set('db-mes-cobrancas', cbMes.length);
+  set('db-mes-recibos',   rcMes);
+  set('db-mes-recebido',  fmt(recMes));
+  set('db-mes-pendente',  fmt(pendMes));
+
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const em7 = new Date(hoje); em7.setDate(em7.getDate()+7);
+  const proximos = cobrancas
+    .filter(c => { if (c.status==='Pago') return false; const v=new Date(c.vencimento+'T12:00:00'); return v>=hoje&&v<=em7; })
+    .sort((a,b) => new Date(a.vencimento)-new Date(b.vencimento));
+  const elProx = document.getElementById('db-proximos-vencimentos');
+  if (elProx) {
+    if (!proximos.length) { elProx.innerHTML='<p class="text-gray-400 text-sm">Nenhum vencimento nos próximos 7 dias. 🎉</p>'; }
+    else {
+      elProx.innerHTML = proximos.map(c => {
+        const v = new Date(c.vencimento+'T12:00:00');
+        const dias = Math.ceil((v-hoje)/86400000);
+        const cor = dias===0?'text-red-600 font-black':dias<=3?'text-orange-500 font-bold':'text-gray-700';
+        return `<div class="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
+          <div>
+            <span class="font-medium text-gray-800">${c.cliente}</span>
+            <span class="text-xs text-gray-400 ml-2">${c.desc.substring(0,40)}</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="font-bold text-gray-700">${fmt(c.valor)}</span>
+            <span class="${cor} text-sm">${dias===0?'Hoje':dias+'d'}</span>
+            <button onclick="cobrarWhatsById(${c.id})" class="text-xs bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded-lg">💬 Cobrar</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  const elCli = document.getElementById('db-ultimos-clientes');
+  if (elCli) {
+    const ultimos = clientes.slice(0,5);
+    if (!ultimos.length) { elCli.innerHTML='<p class="text-gray-400 text-sm">Nenhum cliente cadastrado ainda.</p>'; }
+    else {
+      elCli.innerHTML = ultimos.map(c => {
+        const total = contratos.filter(ct=>ct.cliNome===c.nome).length;
+        const telLink = c.tel ? `<a href="https://wa.me/55${c.tel.replace(/\D/g,'')}" target="_blank" class="text-green-600 hover:underline text-xs">💬 ${c.tel}</a>` : '<span class="text-xs text-gray-300">Sem telefone</span>';
+        return `<div class="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
+          <div>
+            <span class="font-medium text-gray-800">${c.nome}</span>
+            <div class="mt-0.5">${telLink}</div>
+          </div>
+          <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">${total} contrato${total!==1?'s':''}</span>
+        </div>`;
+      }).join('');
+    }
+  }
+}
+
 function resetarFormContrato() {
   currentStep = 1;
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
   document.getElementById('step-1').classList.add('active');
   updateProgressBar();
-  ['ct-cli-nome','ct-cli-doc','ct-cli-end','ct-desc','ct-valor','ct-inicio','ct-entrega'].forEach(id => {
+  ['ct-cli-nome','ct-cli-tel','ct-cli-doc','ct-cli-end','ct-desc','ct-valor','ct-inicio','ct-entrega'].forEach(id => {
     const el = document.getElementById(id); if (el) el.value = '';
   });
   document.getElementById('ct-pgto').value = '';
