@@ -506,12 +506,12 @@
                   <input id="ct-cli-nome" type="text" oninput="autoPreencherCliente()" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition">
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Telefone do cliente *</label>
-                  <input id="ct-cli-tel" type="tel" placeholder="(11) 99999-9999" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Celular do cliente *</label>
+                  <input id="ct-cli-tel" type="tel" placeholder="(11) 99999-9999" maxlength="15" oninput="mascaraTel(this)" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition">
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">CPF do cliente *</label>
-                  <input id="ct-cli-doc" type="text" placeholder="000.000.000-00" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">CPF do cliente</label>
+                  <input id="ct-cli-doc" type="text" placeholder="000.000.000-00" maxlength="14" oninput="mascaraCPF(this)" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition">
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Endereço do cliente *</label>
@@ -720,7 +720,7 @@
             </div>
 
             <div id="form-cliente" class="hidden mb-6 bg-gray-50 rounded-xl p-5 border border-gray-200">
-              <h3 class="font-bold text-gray-700 mb-4">Novo cliente</h3>
+              <h3 class="font-bold text-gray-700 mb-4" id="form-cliente-titulo">Novo cliente</h3>
               <div class="grid md:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Nome *</label>
@@ -728,11 +728,11 @@
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">CPF</label>
-                  <input id="cli-cpf" type="text" placeholder="000.000.000-00" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition bg-white">
+                  <input id="cli-cpf" type="text" placeholder="000.000.000-00" maxlength="14" oninput="mascaraCPF(this)" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition bg-white">
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Telefone *</label>
-                  <input id="cli-tel" type="tel" placeholder="(11) 99999-9999" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition bg-white">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Celular</label>
+                  <input id="cli-tel" type="tel" placeholder="(11) 99999-9999" maxlength="15" oninput="mascaraTel(this)" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition bg-white">
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
@@ -1279,6 +1279,23 @@ function atualizarPreviewParcelas() {
   document.getElementById('parcelas-preview').textContent = n + 'x de R$' + parc + ' — cobranças geradas automaticamente mês a mês';
 }
 
+function mascaraCPF(el) {
+  let v = el.value.replace(/\D/g, '').substring(0, 11);
+  if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/, '$1.$2.$3-$4');
+  else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{0,3})/, '$1.$2.$3');
+  else if (v.length > 3) v = v.replace(/(\d{3})(\d{0,3})/, '$1.$2');
+  el.value = v;
+}
+
+function mascaraTel(el) {
+  let v = el.value.replace(/\D/g, '').substring(0, 11);
+  if (v.length > 10) v = v.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+  else if (v.length > 6) v = v.replace(/(\d{2})(\d{4,5})(\d{0,4})/, '($1) $2-$3');
+  else if (v.length > 2) v = v.replace(/(\d{2})(\d{0,5})/, '($1) $2');
+  else if (v.length > 0) v = v.replace(/(\d*)/, '($1');
+  el.value = v;
+}
+
 function autoPreencherCliente() {
   const nome = document.getElementById('ct-cli-nome').value.trim();
   if (!nome) return;
@@ -1455,8 +1472,10 @@ function salvarContrato() {
   const jaExiste = clientes.some(c => c.nome.trim().toLowerCase() === d.cliNome.trim().toLowerCase());
   let clienteMsg = '';
   if (!jaExiste) {
+    const codigo = gerarCodigoCliente(clientes);
     clientes.unshift({
       id: contratoId + 100,
+      codigo,
       nome: d.cliNome,
       cpf: d.cliDoc,
       tel: d.cliTel || '',
@@ -1839,9 +1858,13 @@ function toggleFormCliente() {
   f.classList.toggle('hidden');
 }
 
+function gerarCodigoCliente(clientes) {
+  const num = clientes.length + 1;
+  return 'CLI-' + String(num).padStart(3, '0');
+}
+
 function salvarCliente() {
   const nome = document.getElementById('cli-nome').value.trim();
-  const tel = document.getElementById('cli-tel').value.trim();
   const erro = document.getElementById('cli-erro');
   if (!nome) { erro.textContent = 'O nome é obrigatório.'; erro.classList.remove('hidden'); return; }
   erro.classList.add('hidden');
@@ -1850,15 +1873,27 @@ function salvarCliente() {
   if (editId) {
     const idx = clientes.findIndex(c => c.id === editId);
     if (idx !== -1) {
-      clientes[idx] = { ...clientes[idx], nome, tel, cpf: document.getElementById('cli-cpf').value, email: document.getElementById('cli-email').value, end: document.getElementById('cli-end').value, obs: document.getElementById('cli-obs').value };
+      clientes[idx] = { ...clientes[idx], nome,
+        tel: document.getElementById('cli-tel').value,
+        cpf: document.getElementById('cli-cpf').value,
+        email: document.getElementById('cli-email').value,
+        end: document.getElementById('cli-end').value,
+        obs: document.getElementById('cli-obs').value };
     }
     showToast('Cliente atualizado!');
   } else {
-    clientes.unshift({ id: Date.now(), nome, tel, cpf: document.getElementById('cli-cpf').value, email: document.getElementById('cli-email').value, end: document.getElementById('cli-end').value, obs: document.getElementById('cli-obs').value });
-    showToast('Cliente cadastrado!');
+    const codigo = gerarCodigoCliente(clientes);
+    clientes.unshift({ id: Date.now(), codigo, nome,
+      tel: document.getElementById('cli-tel').value,
+      cpf: document.getElementById('cli-cpf').value,
+      email: document.getElementById('cli-email').value,
+      end: document.getElementById('cli-end').value,
+      obs: document.getElementById('cli-obs').value });
+    showToast('Cliente ' + codigo + ' cadastrado!');
   }
   setData('clientes', clientes);
   document.getElementById('form-cliente').classList.add('hidden');
+  document.getElementById('form-cliente-titulo').textContent = 'Novo cliente';
   document.getElementById('cli-edit-id').value = '';
   ['cli-nome','cli-cpf','cli-tel','cli-email','cli-end','cli-obs'].forEach(id => document.getElementById(id).value = '');
   renderListaClientes();
@@ -1869,7 +1904,7 @@ function renderListaClientes(busca) {
   let clientes = getData('clientes', []);
   const el = document.getElementById('lista-clientes');
   const termo = busca !== undefined ? busca : (document.getElementById('cli-busca')?.value || '').toLowerCase();
-  if (termo) clientes = clientes.filter(c => c.nome.toLowerCase().includes(termo) || (c.tel||'').includes(termo));
+  if (termo) clientes = clientes.filter(c => c.nome.toLowerCase().includes(termo) || (c.tel||'').includes(termo) || (c.codigo||'').toLowerCase().includes(termo));
   if (!clientes.length) { el.innerHTML = '<p class="text-gray-400 text-sm">Nenhum cliente encontrado.</p>'; return; }
   const contratos = getData('contratos', []);
   el.innerHTML = clientes.map(c => {
@@ -1878,10 +1913,17 @@ function renderListaClientes(busca) {
     <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
       <div class="flex items-start justify-between gap-3">
         <div class="flex-1 min-w-0">
-          <div class="font-medium text-gray-800">${c.nome}</div>
-          <div class="text-sm text-gray-500">${c.tel || '<span class="text-orange-400">⚠ Telefone não informado</span>'}${c.email ? ' · ' + c.email : ''}</div>
-          ${c.end ? '<div class="text-xs text-gray-400 mt-0.5">' + c.end + '</div>' : ''}
-          ${c.obs ? '<div class="text-xs text-gray-400 mt-1 italic">' + c.obs + '</div>' : ''}
+          <div class="flex items-center gap-2 flex-wrap">
+            ${c.codigo ? `<span class="text-xs font-mono bg-gray-200 text-gray-600 px-2 py-0.5 rounded">${c.codigo}</span>` : ''}
+            <span class="font-bold text-gray-800">${c.nome}</span>
+          </div>
+          <div class="text-sm text-gray-500 mt-1">
+            ${c.tel ? `<a href="https://wa.me/55${c.tel.replace(/\D/g,'')}" target="_blank" class="text-green-600 hover:underline">💬 ${c.tel}</a>` : '<span class="text-orange-400 text-xs">⚠ Sem celular</span>'}
+            ${c.email ? ' · ' + c.email : ''}
+          </div>
+          ${c.cpf ? `<div class="text-xs text-gray-400 mt-0.5">CPF: ${c.cpf}</div>` : ''}
+          ${c.end ? `<div class="text-xs text-gray-400 mt-0.5">${c.end}</div>` : ''}
+          ${c.obs ? `<div class="text-xs text-gray-300 mt-1 italic">${c.obs}</div>` : ''}
         </div>
         <div class="flex flex-col items-end gap-2 flex-shrink-0">
           <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">${total} contrato${total !== 1 ? 's' : ''}</span>
@@ -1906,6 +1948,7 @@ function editarCliente(id) {
   document.getElementById('cli-end').value = c.end || '';
   document.getElementById('cli-obs').value = c.obs || '';
   document.getElementById('cli-edit-id').value = id;
+  document.getElementById('form-cliente-titulo').textContent = 'Editar cliente ' + (c.codigo || '');
   document.getElementById('form-cliente').classList.remove('hidden');
   document.getElementById('form-cliente').scrollIntoView({ behavior: 'smooth' });
 }
