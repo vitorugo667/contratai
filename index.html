@@ -290,6 +290,9 @@
         <a href="#" onclick="switchTab('renovacao')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl transition text-gray-300 hover:bg-gray-800" data-tab="renovacao">
           <span>🔄</span> Minha assinatura
         </a>
+        <a href="#" onclick="switchTab('instrucoes')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl transition text-gray-300 hover:bg-gray-800" data-tab="instrucoes">
+          <span>📖</span> Como usar
+        </a>
       </nav>
       <div class="p-4 border-t border-gray-700">
         <button onclick="sair()" class="flex items-center gap-2 text-gray-400 hover:text-white transition text-sm">
@@ -477,56 +480,26 @@
             </div>
             <div id="alerta-vencimentos" class="hidden mb-4 bg-orange-50 border border-orange-200 rounded-xl p-3 text-sm text-orange-800"></div>
 
-            <!-- Progress bar -->
+            <!-- Progress bar 2 steps -->
             <div class="flex items-center mb-8">
-              <div class="flex items-center" id="prog-1">
-                <div class="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-bold">1</div>
-                <div class="ml-2 text-sm font-medium text-green-600 hidden sm:block">Seus dados</div>
+              <div class="flex items-center">
+                <div class="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-bold" id="prog-num-1">1</div>
+                <div class="ml-2 text-sm font-medium text-green-600 hidden sm:block" id="prog-lbl-1">Cliente e serviço</div>
               </div>
-              <div class="flex-1 h-1 bg-gray-200 mx-3" id="prog-line-1"><div class="h-1 bg-green-600 transition-all" id="prog-fill-1" style="width:0%"></div></div>
-              <div class="flex items-center" id="prog-2">
+              <div class="flex-1 h-1 bg-gray-200 mx-3"><div class="h-1 bg-green-600 transition-all" id="prog-fill-1" style="width:0%"></div></div>
+              <div class="flex items-center">
                 <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-sm font-bold" id="prog-num-2">2</div>
-                <div class="ml-2 text-sm font-medium text-gray-400 hidden sm:block" id="prog-lbl-2">Serviço</div>
-              </div>
-              <div class="flex-1 h-1 bg-gray-200 mx-3" id="prog-line-2"><div class="h-1 bg-green-600 transition-all" id="prog-fill-2" style="width:0%"></div></div>
-              <div class="flex items-center" id="prog-3">
-                <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-sm font-bold" id="prog-num-3">3</div>
-                <div class="ml-2 text-sm font-medium text-gray-400 hidden sm:block" id="prog-lbl-3">Finalizar</div>
+                <div class="ml-2 text-sm font-medium text-gray-400 hidden sm:block" id="prog-lbl-2">Revisar e salvar</div>
               </div>
             </div>
 
-            <!-- Step 1 -->
+            <!-- Step 1: Cliente + Serviço -->
             <div id="step-1" class="step active space-y-4">
-              <h3 class="font-bold text-gray-700 mb-4">Seus dados de prestador</h3>
-              <div class="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Nome completo *</label>
-                  <input id="ct-prest-nome" type="text" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition">
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">CPF ou CNPJ *</label>
-                  <input id="ct-prest-doc" type="text" placeholder="000.000.000-00" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition">
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Endereço *</label>
-                  <input id="ct-prest-end" type="text" placeholder="Rua, número, cidade - UF" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition">
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Telefone *</label>
-                  <input id="ct-prest-tel" type="tel" placeholder="(11) 99999-9999" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition">
-                </div>
+              <div class="bg-green-50 border border-green-200 rounded-xl px-4 py-3 flex items-center gap-3 mb-2">
+                <span class="text-green-600 text-xl">👤</span>
+                <div class="text-sm text-green-800"><span class="font-bold" id="ct-prest-label">Seu nome</span> — seus dados cadastrados serão usados no contrato</div>
               </div>
-              <div id="step1-erro" class="hidden text-red-500 text-sm"></div>
-              <div class="flex justify-end mt-4">
-                <button onclick="nextStep(2)" class="bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-3 rounded-xl transition">
-                  Próximo →
-                </button>
-              </div>
-            </div>
-
-            <!-- Step 2 -->
-            <div id="step-2" class="step space-y-4">
-              <h3 class="font-bold text-gray-700 mb-4">Dados do cliente e serviço</h3>
+              <h3 class="font-bold text-gray-700">Dados do cliente</h3>
               <div class="grid md:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Nome do cliente *</label>
@@ -544,8 +517,11 @@
                   <label class="block text-sm font-medium text-gray-700 mb-1">Endereço do cliente *</label>
                   <input id="ct-cli-end" type="text" placeholder="Rua, número, cidade - UF" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition">
                 </div>
+              </div>
+              <h3 class="font-bold text-gray-700 pt-2">Detalhes do serviço</h3>
+              <div class="grid md:grid-cols-2 gap-4">
                 <div class="md:col-span-2">
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Descrição do serviço *</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Serviço contratado *</label>
                   <textarea id="ct-desc" rows="3" placeholder="Descreva detalhadamente o serviço que será realizado..." class="w-full border border-gray-200 rounded-xl px-4 py-3 transition resize-none"></textarea>
                 </div>
                 <div>
@@ -554,12 +530,29 @@
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Forma de pagamento *</label>
-                  <select id="ct-pgto" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition bg-white">
+                  <select id="ct-pgto" onchange="toggleParcelas()" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition bg-white">
                     <option value="">Selecione</option>
                     <option>À vista</option>
                     <option>50% entrada + 50% na entrega</option>
                     <option>Parcelado</option>
                   </select>
+                </div>
+                <div id="campo-parcelas" class="hidden md:col-span-2">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Número de parcelas *</label>
+                  <select id="ct-parcelas" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition bg-white">
+                    <option value="2">2x</option>
+                    <option value="3">3x</option>
+                    <option value="4">4x</option>
+                    <option value="5">5x</option>
+                    <option value="6">6x</option>
+                    <option value="7">7x</option>
+                    <option value="8">8x</option>
+                    <option value="9">9x</option>
+                    <option value="10">10x</option>
+                    <option value="11">11x</option>
+                    <option value="12">12x</option>
+                  </select>
+                  <p id="parcelas-preview" class="text-xs text-green-600 mt-1 font-medium"></p>
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Data de início *</label>
@@ -569,42 +562,38 @@
                   <label class="block text-sm font-medium text-gray-700 mb-1">Data de entrega prevista *</label>
                   <input id="ct-entrega" type="date" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition">
                 </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Prazo para pagamento após entrega</label>
-                  <select id="ct-prazo" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition bg-white">
-                    <option value="3">3 dias</option>
-                    <option value="5">5 dias</option>
-                    <option value="7">7 dias</option>
-                    <option value="10">10 dias</option>
-                    <option value="15">15 dias</option>
-                  </select>
-                </div>
               </div>
-              <div id="step2-erro" class="hidden text-red-500 text-sm"></div>
-              <div class="flex justify-between mt-4">
-                <button onclick="prevStep(1)" class="border border-gray-300 text-gray-600 font-bold px-6 py-3 rounded-xl hover:bg-gray-50 transition">
-                  ← Voltar
-                </button>
-                <button onclick="nextStep(3)" class="bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-3 rounded-xl transition">
+              <div id="step1-erro" class="hidden text-red-500 text-sm"></div>
+              <div class="flex justify-end mt-4">
+                <button onclick="nextStep(2)" class="bg-green-600 hover:bg-green-700 text-white font-bold px-8 py-3 rounded-xl transition">
                   Ver preview →
                 </button>
               </div>
             </div>
 
-            <!-- Step 3 -->
-            <div id="step-3" class="step">
-              <h3 class="font-bold text-gray-700 mb-4">Preview do contrato</h3>
-              <div id="contrato-preview" class="border border-gray-200 rounded-xl p-6 bg-gray-50 text-sm leading-relaxed mb-6 font-mono"></div>
+            <!-- Step 2: Preview -->
+            <div id="step-2" class="step">
+              <h3 class="font-bold text-gray-700 mb-4">Revise o contrato</h3>
+              <div id="contrato-preview" class="border border-gray-200 rounded-xl p-6 bg-gray-50 text-sm leading-relaxed mb-4 font-mono"></div>
+              <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4 text-sm text-blue-800">
+                <p class="font-bold mb-1">💬 Como enviar o PDF pelo WhatsApp:</p>
+                <ol class="list-decimal ml-4 space-y-1 text-xs">
+                  <li>Clique em <strong>Baixar PDF</strong> — o arquivo vai para sua pasta de Downloads</li>
+                  <li>Abra o WhatsApp no celular ou no computador</li>
+                  <li>Na conversa com o cliente, clique no 📎 (anexar)</li>
+                  <li>Selecione o arquivo PDF baixado e envie</li>
+                </ol>
+              </div>
               <div class="flex flex-col sm:flex-row gap-3">
                 <button onclick="gerarContratosPDF()" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
-                  📄 Baixar contrato em PDF
+                  📄 Baixar PDF
                 </button>
                 <button onclick="enviarContratoWhats()" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
-                  💬 Enviar pelo WhatsApp
+                  💬 Avisar pelo WhatsApp
                 </button>
               </div>
               <div class="flex justify-between mt-4">
-                <button onclick="prevStep(2)" class="border border-gray-300 text-gray-600 font-bold px-6 py-3 rounded-xl hover:bg-gray-50 transition">
+                <button onclick="prevStep(1)" class="border border-gray-300 text-gray-600 font-bold px-6 py-3 rounded-xl hover:bg-gray-50 transition">
                   ← Voltar
                 </button>
                 <button onclick="salvarContrato()" class="bg-gray-800 hover:bg-gray-700 text-white font-bold px-6 py-3 rounded-xl transition">
@@ -948,7 +937,123 @@
           </div>
         </div>
 
+        <!-- TAB: Instruções -->
+        <div id="tab-instrucoes" class="tab-content">
+          <div class="max-w-3xl mx-auto space-y-5">
+            <div class="bg-green-600 rounded-2xl p-6 text-white">
+              <h2 class="text-2xl font-black mb-1">📖 Como usar o ContratAí</h2>
+              <p class="text-green-100 text-sm">Guia completo para aproveitar tudo que o sistema oferece</p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <h3 class="font-black text-gray-800 text-lg mb-4 flex items-center gap-2">🏠 Dashboard</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> É a primeira tela que aparece. Mostra um resumo completo do seu negócio em números.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> <strong>Total recebido</strong> = soma de todas as cobranças marcadas como Pago.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> <strong>A receber</strong> = cobranças Pendentes e Enviadas ainda não pagas.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> <strong>Próximos vencimentos</strong> mostra cobranças que vencem nos próximos 7 dias. Use o botão 💬 para cobrar na hora.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> Clique no telefone de um cliente para abrir o WhatsApp direto.</li>
+              </ul>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <h3 class="font-black text-gray-800 text-lg mb-4 flex items-center gap-2">📄 Contratos</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li class="flex gap-2"><span class="text-green-500 font-bold">1.</span> Preencha os dados do cliente. Se ele já foi cadastrado antes, os campos preenchem sozinhos ao digitar o nome.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">2.</span> Descreva o <strong>serviço contratado</strong>, o valor e a forma de pagamento.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">3.</span> Se escolher <strong>Parcelado</strong>, defina o número de parcelas — as cobranças são criadas automaticamente uma por mês.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">4.</span> Clique em <strong>Ver preview</strong>, confira o contrato e clique em <strong>Baixar PDF</strong>.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">5.</span> Para enviar pelo WhatsApp: baixe o PDF → abra o WhatsApp → clique em 📎 → selecione o arquivo.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">6.</span> Clique em <strong>💾 Salvar contrato</strong> — isso cria as cobranças e cadastra o cliente automaticamente.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> Cada contrato recebe um número (CT-001, CT-002...) para fácil referência.</li>
+              </ul>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <h3 class="font-black text-gray-800 text-lg mb-4 flex items-center gap-2">💰 Cobranças</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> As cobranças são criadas <strong>automaticamente</strong> ao salvar um contrato. Você não precisa criar manualmente.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> Você também pode criar uma cobrança avulsa sem contrato preenchendo o formulário nesta aba.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> Altere o status de cada cobrança: <span class="bg-yellow-100 text-yellow-700 px-1 rounded">Pendente</span> → <span class="bg-blue-100 text-blue-700 px-1 rounded">Enviado</span> → <span class="bg-green-100 text-green-700 px-1 rounded">Pago</span>.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> Ao marcar como <strong>Pago</strong>, o sistema gera um recibo automaticamente e faz o download do PDF.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> Clique em <strong>💬 Cobrar</strong> para enviar uma mensagem pelo WhatsApp com o valor, vencimento e sua chave PIX (se configurada).</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> Cobranças com borda vermelha estão vencidas.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> Configure o <strong>Mercado Pago</strong> no topo desta aba para incluir sua chave PIX e link de pagamento em todas as mensagens.</li>
+              </ul>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <h3 class="font-black text-gray-800 text-lg mb-4 flex items-center gap-2">👥 Clientes</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> Os clientes são cadastrados <strong>automaticamente</strong> ao salvar um contrato. Não precisa cadastrar manualmente.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> Use o campo de busca para encontrar clientes pelo nome ou telefone.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> Clique em <strong>✏️ Editar</strong> para atualizar telefone, email ou endereço de um cliente.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> Complete o telefone dos clientes importados para poder cobrar pelo WhatsApp com um clique.</li>
+              </ul>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <h3 class="font-black text-gray-800 text-lg mb-4 flex items-center gap-2">🧾 Recibos</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> Recibos são gerados <strong>automaticamente</strong> quando uma cobrança é marcada como Pago.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> Você também pode emitir um recibo manualmente nesta aba para pagamentos fora do sistema.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> Cada recibo tem um número sequencial (00001, 00002...) para controle.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> O PDF inclui valor por extenso, data e campo de assinatura.</li>
+              </ul>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <h3 class="font-black text-gray-800 text-lg mb-4 flex items-center gap-2">📋 Pedidos</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> Visão unificada de cada serviço: contrato + cobranças + recibos em um único card.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> A barra de progresso mostra quanto do valor total já foi recebido.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> Filtre por status: Em andamento / Aguardando pagamento / Concluído / Vencido.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> Use <strong>🧾 Emitir recibo</strong> para gerar um recibo manual para aquele cliente com campos já preenchidos.</li>
+              </ul>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <h3 class="font-black text-gray-800 text-lg mb-4 flex items-center gap-2">🔄 Minha assinatura</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> Mostra seu plano, datas de renovação e histórico de pagamentos.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> Configure o link de assinatura do Mercado Pago para cobranças automáticas mensais.</li>
+              </ul>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <h3 class="font-black text-gray-800 text-lg mb-4 flex items-center gap-2">💾 Backup dos dados</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> Seus dados ficam salvos no navegador (localStorage). Se limpar o histórico do navegador, os dados podem ser perdidos.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> Use <strong>📤 Exportar backup</strong> no Dashboard para salvar um arquivo JSON com tudo.</li>
+                <li class="flex gap-2"><span class="text-green-500 font-bold">→</span> Para restaurar, use <strong>📥 Importar backup</strong> e selecione o arquivo salvo.</li>
+                <li class="flex gap-2"><span class="text-orange-500 font-bold">⚠️</span> Faça backup regularmente, especialmente antes de limpar o cache do navegador.</li>
+              </ul>
+            </div>
+
+            <div class="bg-green-50 border border-green-200 rounded-2xl p-5 text-center">
+              <p class="text-green-800 font-medium text-sm">Dúvidas? Sugestões? Entre em contato pelo <strong>contratai@suporte.com.br</strong></p>
+            </div>
+          </div>
+        </div>
+
       </main>
+    </div>
+  </div>
+</div>
+
+<!-- Modal boas-vindas -->
+<div id="modal-boasvindas" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4">
+  <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-7 text-center">
+    <div class="text-5xl mb-4">👋</div>
+    <h2 class="text-2xl font-black text-gray-800 mb-2">Bem-vindo ao ContratAí!</h2>
+    <p class="text-gray-500 text-sm mb-5">Para começar bem, temos um guia completo ensinando a usar todas as funcionalidades do sistema — contratos, cobranças, recibos e muito mais.</p>
+    <div class="flex flex-col gap-3">
+      <button onclick="verTutorial()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition">
+        📖 Ver o guia de uso
+      </button>
+      <button onclick="fecharModal()" class="text-gray-400 text-sm hover:underline">
+        Já sei usar, pular
+      </button>
     </div>
   </div>
 </div>
@@ -1052,7 +1157,7 @@ function switchTab(tab) {
   if (tab === 'renovacao') renderRenovacao();
   if (tab === 'cobrancas') preencherConfigMP();
   if (tab === 'clientes') renderListaClientes();
-  const titles = { dashboard: 'Dashboard', contratos: 'Contratos', cobrancas: 'Cobranças', clientes: 'Clientes', recibos: 'Recibos', pedidos: 'Pedidos', renovacao: 'Minha assinatura' };
+  const titles = { dashboard: 'Dashboard', contratos: 'Contratos', cobrancas: 'Cobranças', clientes: 'Clientes', recibos: 'Recibos', pedidos: 'Pedidos', renovacao: 'Minha assinatura', instrucoes: 'Como usar' };
   document.getElementById('dash-title').textContent = titles[tab];
   const sb = document.getElementById('sidebar');
   if (window.innerWidth < 768 && sb && !sb.classList.contains('hidden')) {
@@ -1081,8 +1186,8 @@ function initDashboard() {
 
 function preencherCamposUsuario() {
   const user = getData('user', {});
-  if (user.nome) document.getElementById('ct-prest-nome').value = user.nome;
-  if (user.whats) document.getElementById('ct-prest-tel').value = user.whats;
+  const label = document.getElementById('ct-prest-label');
+  if (label && user.nome) label.textContent = user.nome;
 }
 
 function atualizarStats() {
@@ -1102,30 +1207,23 @@ function atualizarStats() {
 let currentStep = 1;
 function nextStep(step) {
   if (step === 2) {
-    const nome = document.getElementById('ct-prest-nome').value.trim();
-    const doc = document.getElementById('ct-prest-doc').value.trim();
-    const end = document.getElementById('ct-prest-end').value.trim();
-    const tel = document.getElementById('ct-prest-tel').value.trim();
+    const nome = document.getElementById('ct-cli-nome').value.trim();
+    const tel  = document.getElementById('ct-cli-tel').value.trim();
+    const doc  = document.getElementById('ct-cli-doc').value.trim();
+    const end  = document.getElementById('ct-cli-end').value.trim();
+    const desc = document.getElementById('ct-desc').value.trim();
+    const valor= document.getElementById('ct-valor').value;
+    const pgto = document.getElementById('ct-pgto').value;
+    const inicio  = document.getElementById('ct-inicio').value;
+    const entrega = document.getElementById('ct-entrega').value;
     const erro = document.getElementById('step1-erro');
-    if (!nome || !doc || !end || !tel) {
-      erro.textContent = 'Preencha todos os campos obrigatórios.';
+    if (!nome || !tel || !desc || !valor || !pgto || !inicio || !entrega) {
+      erro.textContent = 'Preencha nome, telefone, serviço, valor, forma de pagamento e datas.';
       erro.classList.remove('hidden');
       return;
     }
-    erro.classList.add('hidden');
-  }
-  if (step === 3) {
-    const nome = document.getElementById('ct-cli-nome').value.trim();
-    const doc = document.getElementById('ct-cli-doc').value.trim();
-    const end = document.getElementById('ct-cli-end').value.trim();
-    const desc = document.getElementById('ct-desc').value.trim();
-    const valor = document.getElementById('ct-valor').value;
-    const pgto = document.getElementById('ct-pgto').value;
-    const inicio = document.getElementById('ct-inicio').value;
-    const entrega = document.getElementById('ct-entrega').value;
-    const erro = document.getElementById('step2-erro');
-    if (!nome || !doc || !end || !desc || !valor || !pgto || !inicio || !entrega) {
-      erro.textContent = 'Preencha todos os campos obrigatórios.';
+    if (pgto === 'Parcelado' && !document.getElementById('ct-parcelas').value) {
+      erro.textContent = 'Informe o número de parcelas.';
       erro.classList.remove('hidden');
       return;
     }
@@ -1144,8 +1242,7 @@ function prevStep(step) {
   updateProgressBar();
 }
 function updateProgressBar() {
-  const colors = ['bg-green-600 text-white', 'bg-gray-200 text-gray-500'];
-  [1,2,3].forEach(i => {
+  [1,2].forEach(i => {
     const el = document.getElementById('prog-num-' + i);
     const lbl = document.getElementById('prog-lbl-' + i);
     if (el) {
@@ -1162,6 +1259,26 @@ function updateProgressBar() {
   });
 }
 
+function toggleParcelas() {
+  const pgto = document.getElementById('ct-pgto').value;
+  const campo = document.getElementById('campo-parcelas');
+  const prev = document.getElementById('parcelas-preview');
+  if (pgto === 'Parcelado') {
+    campo.classList.remove('hidden');
+    atualizarPreviewParcelas();
+  } else {
+    campo.classList.add('hidden');
+    prev.textContent = '';
+  }
+}
+
+function atualizarPreviewParcelas() {
+  const valor = parseFloat(document.getElementById('ct-valor').value) || 0;
+  const n = parseInt(document.getElementById('ct-parcelas').value) || 2;
+  const parc = (valor / n).toFixed(2).replace('.', ',');
+  document.getElementById('parcelas-preview').textContent = n + 'x de R$' + parc + ' — cobranças geradas automaticamente mês a mês';
+}
+
 function autoPreencherCliente() {
   const nome = document.getElementById('ct-cli-nome').value.trim();
   if (!nome) return;
@@ -1175,11 +1292,13 @@ function autoPreencherCliente() {
 }
 
 function getContratoData() {
+  const user = getData('user', {});
+  const mpCfg = getData('mp-config', {});
   return {
-    prestNome: document.getElementById('ct-prest-nome').value,
-    prestDoc: document.getElementById('ct-prest-doc').value,
-    prestEnd: document.getElementById('ct-prest-end').value,
-    prestTel: document.getElementById('ct-prest-tel').value,
+    prestNome: user.nome || '',
+    prestDoc: user.cpf || user.cnpj || '',
+    prestEnd: user.end || '',
+    prestTel: user.whats || '',
     cliNome: document.getElementById('ct-cli-nome').value,
     cliTel: document.getElementById('ct-cli-tel').value,
     cliDoc: document.getElementById('ct-cli-doc').value,
@@ -1187,9 +1306,9 @@ function getContratoData() {
     desc: document.getElementById('ct-desc').value,
     valor: document.getElementById('ct-valor').value,
     pgto: document.getElementById('ct-pgto').value,
+    parcelas: parseInt(document.getElementById('ct-parcelas')?.value) || 1,
     inicio: document.getElementById('ct-inicio').value,
     entrega: document.getElementById('ct-entrega').value,
-    prazo: document.getElementById('ct-prazo').value,
     data: new Date().toLocaleDateString('pt-BR'),
   };
 }
@@ -1206,9 +1325,9 @@ function renderPreviewContrato() {
     <div class="text-center font-bold text-lg mb-4">CONTRATO DE PRESTAÇÃO DE SERVIÇOS</div>
     <div class="mb-3"><b>CONTRATADO (Prestador):</b> ${d.prestNome} — CPF/CNPJ: ${d.prestDoc} — ${d.prestEnd} — Tel: ${d.prestTel}</div>
     <div class="mb-3"><b>CONTRATANTE (Cliente):</b> ${d.cliNome} — CPF: ${d.cliDoc} — Tel: ${d.cliTel} — ${d.cliEnd}</div>
-    <div class="mb-2"><b>OBJETO:</b> ${d.desc}</div>
-    <div class="mb-2"><b>VALOR:</b> R$ ${parseFloat(d.valor).toFixed(2).replace('.', ',')} — Forma de pagamento: ${d.pgto}</div>
-    <div class="mb-2"><b>PRAZO:</b> Início em ${formatDate(d.inicio)}, entrega prevista em ${formatDate(d.entrega)}. Prazo para pagamento: ${d.prazo} dias após a entrega.</div>
+    <div class="mb-2"><b>SERVIÇO CONTRATADO:</b> ${d.desc}</div>
+    <div class="mb-2"><b>VALOR:</b> R$ ${parseFloat(d.valor).toFixed(2).replace('.', ',')} — Forma de pagamento: ${d.pgto === 'Parcelado' ? d.pgto + ' (' + d.parcelas + 'x de R$' + (parseFloat(d.valor)/d.parcelas).toFixed(2).replace('.',',') + ')' : d.pgto}</div>
+    <div class="mb-2"><b>PRAZO:</b> Início em ${formatDate(d.inicio)}, entrega prevista em ${formatDate(d.entrega)}.</div>
     <div class="mb-2"><b>RESCISÃO:</b> Em caso de rescisão pelo CONTRATANTE, fica estabelecida multa de 20% sobre o valor total do contrato.</div>
     <div class="mb-2"><b>FORO:</b> Fica eleito o foro da comarca do CONTRATADO para dirimir quaisquer dúvidas.</div>
     <div class="mt-4 pt-4 border-t border-gray-300 grid grid-cols-2 gap-8 text-xs text-center">
@@ -1257,8 +1376,11 @@ function gerarContratosPDF() {
   section('PARTES', `CONTRATADO: ${d.prestNome}\nCPF/CNPJ: ${d.prestDoc} | Endereço: ${d.prestEnd} | Tel: ${d.prestTel}`);
   section('', `CONTRATANTE: ${d.cliNome}\nCPF: ${d.cliDoc} | Tel: ${d.cliTel} | Endereço: ${d.cliEnd}`);
   doc.line(15, y, 195, y); y += 6;
-  section('CLÁUSULA 1ª — OBJETO', d.desc);
-  section('CLÁUSULA 2ª — VALOR E PAGAMENTO', `O valor total pelos serviços é de R$ ${parseFloat(d.valor).toFixed(2).replace('.', ',')} (${numPorExtenso(parseFloat(d.valor))}).\nForma de pagamento: ${d.pgto}.\nPrazo para pagamento: ${d.prazo} dias após a entrega do serviço.`);
+  section('CLÁUSULA 1ª — SERVIÇO CONTRATADO', d.desc);
+  const pgtoDesc = d.pgto === 'Parcelado'
+    ? `Parcelado em ${d.parcelas}x de R$ ${(parseFloat(d.valor)/d.parcelas).toFixed(2).replace('.',',')} com vencimento mensal a partir de ${formatDate(d.inicio)}.`
+    : d.pgto + '.';
+  section('CLÁUSULA 2ª — VALOR E PAGAMENTO', `O valor total pelos serviços é de R$ ${parseFloat(d.valor).toFixed(2).replace('.', ',')} (${numPorExtenso(parseFloat(d.valor))}).\nForma de pagamento: ${pgtoDesc}`);
   section('CLÁUSULA 3ª — PRAZO', `O serviço terá início em ${formatDate(d.inicio)} e entrega prevista em ${formatDate(d.entrega)}.`);
   section('CLÁUSULA 4ª — RESCISÃO', `Em caso de rescisão por iniciativa do CONTRATANTE antes da conclusão do serviço, será devida multa de 20% sobre o valor total do contrato. Em caso de rescisão por iniciativa do CONTRATADO sem justificativa, este devolverá os valores já recebidos.`);
   section('CLÁUSULA 5ª — FORO', `As partes elegem o foro da comarca do CONTRATADO para dirimir quaisquer dúvidas ou litígios decorrentes deste contrato.`);
@@ -1310,42 +1432,22 @@ function salvarContrato() {
   setData('contratos', contratos);
 
   const cobrancas = getData('cobrancas', []);
+  const hoje = new Date().toLocaleDateString('pt-BR');
   if (d.pgto === '50% entrada + 50% na entrega') {
     const metade = (parseFloat(d.valor) / 2).toFixed(2);
-    cobrancas.unshift({
-      id: contratoId + 1,
-      contratoId,
-      cliente: d.cliNome,
-      desc: d.desc + ' — 1ª parcela (entrada)',
-      valor: metade,
-      vencimento: d.inicio,
-      obs: 'Gerada automaticamente pelo contrato',
-      data: new Date().toLocaleDateString('pt-BR'),
-      status: 'Pendente',
-    });
-    cobrancas.unshift({
-      id: contratoId + 2,
-      contratoId,
-      cliente: d.cliNome,
-      desc: d.desc + ' — 2ª parcela (entrega)',
-      valor: metade,
-      vencimento: addDias(d.entrega, d.prazo),
-      obs: 'Gerada automaticamente pelo contrato',
-      data: new Date().toLocaleDateString('pt-BR'),
-      status: 'Pendente',
-    });
+    cobrancas.unshift({ id: contratoId+1, contratoId, cliente: d.cliNome, desc: d.desc+' — 1ª parcela (entrada)', valor: metade, vencimento: d.inicio, obs: 'Gerada automaticamente', data: hoje, status: 'Pendente' });
+    cobrancas.unshift({ id: contratoId+2, contratoId, cliente: d.cliNome, desc: d.desc+' — 2ª parcela (entrega)', valor: metade, vencimento: d.entrega, obs: 'Gerada automaticamente', data: hoje, status: 'Pendente' });
+  } else if (d.pgto === 'Parcelado' && d.parcelas > 1) {
+    const n = d.parcelas;
+    const vlrParc = (parseFloat(d.valor) / n).toFixed(2);
+    const baseDate = new Date(d.inicio + 'T12:00:00');
+    for (let i = 0; i < n; i++) {
+      const venc = new Date(baseDate);
+      venc.setMonth(venc.getMonth() + i);
+      cobrancas.unshift({ id: contratoId + i + 1, contratoId, cliente: d.cliNome, desc: d.desc + ` — ${i+1}ª parcela de ${n}x`, valor: vlrParc, vencimento: venc.toISOString().split('T')[0], obs: 'Gerada automaticamente', data: hoje, status: 'Pendente' });
+    }
   } else {
-    cobrancas.unshift({
-      id: contratoId + 1,
-      contratoId,
-      cliente: d.cliNome,
-      desc: d.desc,
-      valor: d.valor,
-      vencimento: addDias(d.entrega, d.prazo),
-      obs: d.pgto === 'Parcelado' ? 'Parcelado — ajuste as parcelas se necessário' : '',
-      data: new Date().toLocaleDateString('pt-BR'),
-      status: 'Pendente',
-    });
+    cobrancas.unshift({ id: contratoId+1, contratoId, cliente: d.cliNome, desc: d.desc, valor: d.valor, vencimento: d.entrega, obs: '', data: hoje, status: 'Pendente' });
   }
   setData('cobrancas', cobrancas);
 
@@ -2253,9 +2355,8 @@ function resetarFormContrato() {
     const el = document.getElementById(id); if (el) el.value = '';
   });
   document.getElementById('ct-pgto').value = '';
-  document.getElementById('ct-prazo').value = '7';
+  document.getElementById('campo-parcelas').classList.add('hidden');
   document.getElementById('step1-erro').classList.add('hidden');
-  document.getElementById('step2-erro').classList.add('hidden');
   preencherCamposUsuario();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -2517,6 +2618,15 @@ function gerarContratosPDFById(contratoId) {
   showToast('Contrato baixado!');
 }
 
+function verTutorial() {
+  fecharModal();
+  switchTab('instrucoes');
+}
+function fecharModal() {
+  document.getElementById('modal-boasvindas').classList.add('hidden');
+  setData('viu-tutorial', true);
+}
+
 (function init() {
   const pago = getData('pago', false);
   if (pago) {
@@ -2524,6 +2634,9 @@ function gerarContratosPDFById(contratoId) {
     if (user && user.nome) {
       goTo('screen-dashboard');
       initDashboard();
+      if (!getData('viu-tutorial', false)) {
+        setTimeout(() => document.getElementById('modal-boasvindas').classList.remove('hidden'), 800);
+      }
     }
   }
   let count = 47;
