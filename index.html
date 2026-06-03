@@ -1615,12 +1615,101 @@ function mudarStatusCobById(cobId, val) {
   const cobrancas = getData('cobrancas', []);
   const idx = cobrancas.findIndex(c => String(c.id) === String(cobId));
   if (idx === -1) return;
+  const anterior = cobrancas[idx].status;
   cobrancas[idx].status = val;
   setData('cobrancas', cobrancas);
+  if (val === 'Pago' && anterior !== 'Pago') gerarReciboAutomatico(cobrancas[idx]);
   renderListaCobrancas();
   renderListaContratos();
   renderListaPedidos();
+  renderListaRecibos();
   atualizarStats();
+}
+
+function gerarReciboAutomatico(cob) {
+  const user = getData('user', {});
+  const recibos = getData('recibos', []);
+  const jaExiste = recibos.some(r => r.cobId && String(r.cobId) === String(cob.id));
+  if (jaExiste) return;
+  const num = String(recibos.length + 1).padStart(5, '0');
+  const hoje = new Date();
+  const dataHoje = hoje.toISOString().split('T')[0];
+  const novoRecibo = {
+    id: Date.now(),
+    cobId: cob.id,
+    num,
+    cliente: cob.cliente,
+    desc: cob.desc,
+    valor: cob.valor,
+    data: dataHoje,
+    pgto: 'PIX',
+    dataGer: hoje.toLocaleDateString('pt-BR'),
+    automatico: true,
+  };
+  recibos.unshift(novoRecibo);
+  setData('recibos', recibos);
+
+  const doc = new jsPDF();
+  const green = [22, 163, 74];
+  doc.setFillColor(...green);
+  doc.rect(0, 0, 210, 18, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(16); doc.setFont('helvetica', 'bold');
+  doc.text('RECIBO DE PAGAMENTO', 105, 12, { align: 'center' });
+  doc.setTextColor(0,0,0); doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+  doc.text('ContratAí — contratai.com.br', 105, 22, { align: 'center' });
+  doc.setDrawColor(...green); doc.line(15, 25, 195, 25);
+
+  let y = 34;
+  doc.setFontSize(9); doc.setTextColor(120,120,120);
+  doc.text('Nº do Recibo:', 15, y);
+  doc.setFont('helvetica','bold'); doc.setTextColor(0,0,0);
+  doc.text(num, 50, y);
+  doc.setFont('helvetica','normal'); doc.setTextColor(120,120,120);
+  doc.text('Data de emissão:', 130, y);
+  doc.setFont('helvetica','bold'); doc.setTextColor(0,0,0);
+  doc.text(hoje.toLocaleDateString('pt-BR'), 168, y);
+
+  y += 12;
+  doc.setFillColor(240,253,244); doc.setDrawColor(...green);
+  doc.roundedRect(15, y, 180, 22, 3, 3, 'FD');
+  y += 7;
+  doc.setFontSize(13); doc.setFont('helvetica','bold'); doc.setTextColor(...green);
+  doc.text(`R$ ${parseFloat(cob.valor).toFixed(2).replace('.',',')}`, 105, y, { align: 'center' });
+  y += 7;
+  doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(80,80,80);
+  doc.text(`(${numPorExtenso(parseFloat(cob.valor))})`, 105, y, { align: 'center' });
+
+  y += 14;
+  doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(...green);
+  doc.text('RECEBI DE:', 15, y); y += 6;
+  doc.setFont('helvetica','normal'); doc.setTextColor(50,50,50); doc.setFontSize(10);
+  doc.text(cob.cliente, 15, y); y += 10;
+  doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(...green);
+  doc.text('REFERENTE A:', 15, y); y += 6;
+  doc.setFont('helvetica','normal'); doc.setTextColor(50,50,50);
+  const lines = doc.splitTextToSize(cob.desc, 175);
+  doc.text(lines, 15, y); y += lines.length * 6 + 4;
+  doc.text(`Forma de pagamento: PIX`, 15, y); y += 6;
+  doc.text(`Data do recebimento: ${hoje.toLocaleDateString('pt-BR')}`, 15, y); y += 16;
+
+  doc.setDrawColor(200,200,200); doc.line(15, y, 100, y); y += 5;
+  doc.setFontSize(9); doc.setTextColor(50,50,50);
+  doc.text(user.nome || 'Prestador', 57, y, { align: 'center' }); y += 4;
+  doc.setFontSize(8); doc.setTextColor(120,120,120);
+  doc.text('Assinatura do prestador', 57, y, { align: 'center' });
+
+  y += 20;
+  doc.setFillColor(245,245,245); doc.setDrawColor(200,200,200);
+  doc.roundedRect(15, y, 180, 14, 3, 3, 'FD'); y += 9;
+  doc.setFontSize(8); doc.setTextColor(100,100,100);
+  doc.text('Este recibo é válido como comprovante de pagamento.', 105, y, { align: 'center' });
+
+  doc.setFontSize(7); doc.setTextColor(150,150,150);
+  doc.text(`Recibo nº ${num} · Gerado automaticamente em ${hoje.toLocaleDateString('pt-BR')} · ContratAí`, 105, 285, { align: 'center' });
+
+  doc.save('recibo_' + num + '_' + cob.cliente.replace(/ /g,'_') + '.pdf');
+  showToast('✅ Pago! Recibo nº ' + num + ' gerado automaticamente.');
 }
 
 function cobrarWhatsById(cobId) {
