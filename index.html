@@ -293,6 +293,9 @@
         <a href="#" onclick="switchTab('instrucoes')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl transition text-gray-300 hover:bg-gray-800" data-tab="instrucoes">
           <span>📖</span> Como usar
         </a>
+        <a href="#" onclick="switchTab('manutencao')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl transition text-gray-300 hover:bg-gray-800" data-tab="manutencao">
+          <span>🔧</span> Manutenção
+        </a>
       </nav>
       <div class="p-4 border-t border-gray-700">
         <button onclick="sair()" class="flex items-center gap-2 text-gray-400 hover:text-white transition text-sm">
@@ -537,22 +540,48 @@
                     <option>Parcelado</option>
                   </select>
                 </div>
-                <div id="campo-parcelas" class="hidden md:col-span-2">
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Número de parcelas *</label>
-                  <select id="ct-parcelas" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition bg-white">
-                    <option value="2">2x</option>
-                    <option value="3">3x</option>
-                    <option value="4">4x</option>
-                    <option value="5">5x</option>
-                    <option value="6">6x</option>
-                    <option value="7">7x</option>
-                    <option value="8">8x</option>
-                    <option value="9">9x</option>
-                    <option value="10">10x</option>
-                    <option value="11">11x</option>
-                    <option value="12">12x</option>
-                  </select>
-                  <p id="parcelas-preview" class="text-xs text-green-600 mt-1 font-medium"></p>
+                <div id="campo-parcelas" class="hidden md:col-span-2 space-y-4">
+                  <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800">
+                    <p class="font-bold mb-1">📌 Como funciona o parcelamento:</p>
+                    <ul class="list-disc ml-4 space-y-1 text-xs">
+                      <li>Defina quantas parcelas e a data do <strong>1º vencimento</strong></li>
+                      <li>As demais parcelas vencem mês a mês automaticamente</li>
+                      <li>Uma cobrança separada é criada para cada parcela</li>
+                      <li>Ao marcar cada parcela como Paga, o recibo é gerado automaticamente</li>
+                    </ul>
+                  </div>
+                  <div class="grid md:grid-cols-3 gap-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Número de parcelas *</label>
+                      <select id="ct-parcelas" onchange="atualizarPreviewParcelas()" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition bg-white">
+                        <option value="2">2x</option>
+                        <option value="3">3x</option>
+                        <option value="4">4x</option>
+                        <option value="5">5x</option>
+                        <option value="6">6x</option>
+                        <option value="7">7x</option>
+                        <option value="8">8x</option>
+                        <option value="9">9x</option>
+                        <option value="10">10x</option>
+                        <option value="11">11x</option>
+                        <option value="12">12x</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">Vencimento da 1ª parcela *</label>
+                      <input id="ct-parcela-inicio" type="date" oninput="atualizarPreviewParcelas()" class="w-full border border-gray-200 rounded-xl px-4 py-3 transition">
+                    </div>
+                    <div class="flex items-end">
+                      <div class="w-full bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-center">
+                        <div class="text-xs text-green-600 mb-0.5">Valor de cada parcela</div>
+                        <div class="text-xl font-black text-green-700" id="valor-parcela-unit">R$0,00</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="tabela-parcelas" class="hidden">
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Parcelas que serão geradas:</p>
+                    <div id="parcelas-lista" class="divide-y divide-gray-100 border border-gray-200 rounded-xl overflow-hidden bg-white"></div>
+                  </div>
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Data de início *</label>
@@ -1041,6 +1070,97 @@
   </div>
 </div>
 
+        <!-- TAB: Manutenção -->
+        <div id="tab-manutencao" class="tab-content">
+          <div class="max-w-2xl mx-auto space-y-5">
+
+            <div class="bg-red-600 rounded-2xl p-5 text-white flex items-center gap-4">
+              <div class="text-4xl">🔧</div>
+              <div>
+                <h2 class="text-xl font-black">Área de Manutenção</h2>
+                <p class="text-red-200 text-sm">Todas as ações aqui são protegidas por senha e irreversíveis.</p>
+              </div>
+            </div>
+
+            <div id="manut-bloqueado" class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
+              <div class="text-5xl mb-4">🔒</div>
+              <h3 class="font-bold text-gray-800 text-lg mb-2">Área restrita</h3>
+              <p class="text-gray-500 text-sm mb-5">Digite a senha de administrador para acessar as opções de manutenção.</p>
+              <div class="max-w-xs mx-auto space-y-3">
+                <input id="manut-senha" type="password" placeholder="Senha de administrador" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-center transition" onkeydown="if(event.key==='Enter')verificarSenhaAdmin()">
+                <button onclick="verificarSenhaAdmin()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition">
+                  Acessar manutenção
+                </button>
+                <p id="manut-senha-erro" class="hidden text-red-500 text-xs">Senha incorreta. Tente novamente.</p>
+                <p class="text-xs text-gray-400">Esqueceu a senha? Acesse as configurações para redefini-la.</p>
+              </div>
+            </div>
+
+            <div id="manut-painel" class="hidden space-y-4">
+
+              <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h3 class="font-bold text-gray-800 mb-1">⚙️ Senha de administrador</h3>
+                <p class="text-sm text-gray-500 mb-4">Altere a senha usada para acessar esta área.</p>
+                <div class="flex gap-3">
+                  <input id="manut-nova-senha" type="password" placeholder="Nova senha" class="flex-1 border border-gray-200 rounded-xl px-4 py-2 text-sm transition">
+                  <input id="manut-confirma-senha" type="password" placeholder="Confirmar" class="flex-1 border border-gray-200 rounded-xl px-4 py-2 text-sm transition">
+                  <button onclick="alterarSenhaAdmin()" class="bg-gray-800 hover:bg-gray-700 text-white font-bold px-4 py-2 rounded-xl transition text-sm">Salvar</button>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h3 class="font-bold text-gray-800 mb-1">📄 Contratos</h3>
+                <p class="text-sm text-gray-500 mb-4">Selecione os contratos que deseja excluir. As cobranças vinculadas também serão removidas.</p>
+                <div id="manut-lista-contratos" class="space-y-2 max-h-64 overflow-y-auto mb-4"></div>
+                <div class="flex gap-3">
+                  <button onclick="selecionarTodosManut('contratos')" class="text-sm border border-gray-200 text-gray-600 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition">Selecionar todos</button>
+                  <button onclick="excluirSelecionadosManut('contratos')" class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-xl transition text-sm">🗑 Excluir selecionados</button>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h3 class="font-bold text-gray-800 mb-1">💰 Cobranças</h3>
+                <p class="text-sm text-gray-500 mb-4">Selecione as cobranças que deseja excluir.</p>
+                <div id="manut-lista-cobrancas" class="space-y-2 max-h-64 overflow-y-auto mb-4"></div>
+                <div class="flex gap-3">
+                  <button onclick="selecionarTodosManut('cobrancas')" class="text-sm border border-gray-200 text-gray-600 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition">Selecionar todos</button>
+                  <button onclick="excluirSelecionadosManut('cobrancas')" class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-xl transition text-sm">🗑 Excluir selecionados</button>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h3 class="font-bold text-gray-800 mb-1">👥 Clientes</h3>
+                <p class="text-sm text-gray-500 mb-4">Selecione os clientes que deseja excluir. Os contratos deles <strong>não</strong> serão apagados.</p>
+                <div id="manut-lista-clientes" class="space-y-2 max-h-64 overflow-y-auto mb-4"></div>
+                <div class="flex gap-3">
+                  <button onclick="selecionarTodosManut('clientes')" class="text-sm border border-gray-200 text-gray-600 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition">Selecionar todos</button>
+                  <button onclick="excluirSelecionadosManut('clientes')" class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-xl transition text-sm">🗑 Excluir selecionados</button>
+                </div>
+              </div>
+
+              <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h3 class="font-bold text-gray-800 mb-1">🧾 Recibos</h3>
+                <p class="text-sm text-gray-500 mb-4">Selecione os recibos que deseja excluir.</p>
+                <div id="manut-lista-recibos" class="space-y-2 max-h-64 overflow-y-auto mb-4"></div>
+                <div class="flex gap-3">
+                  <button onclick="selecionarTodosManut('recibos')" class="text-sm border border-gray-200 text-gray-600 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition">Selecionar todos</button>
+                  <button onclick="excluirSelecionadosManut('recibos')" class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-xl transition text-sm">🗑 Excluir selecionados</button>
+                </div>
+              </div>
+
+              <div class="bg-red-50 border border-red-200 rounded-2xl p-5">
+                <h3 class="font-bold text-red-700 mb-1">💣 Apagar tudo</h3>
+                <p class="text-sm text-red-600 mb-4">Remove todos os contratos, cobranças, clientes e recibos. Seus dados de login e configurações são mantidos.</p>
+                <button onclick="apagarTudo()" class="border border-red-400 text-red-600 hover:bg-red-100 font-bold px-5 py-2 rounded-xl transition text-sm">Apagar todos os dados</button>
+              </div>
+
+              <div class="text-center">
+                <button onclick="bloquearManutencao()" class="text-gray-400 text-sm hover:underline">🔒 Bloquear área de manutenção</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
 <!-- Modal boas-vindas -->
 <div id="modal-boasvindas" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4">
   <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-7 text-center">
@@ -1157,7 +1277,8 @@ function switchTab(tab) {
   if (tab === 'renovacao') renderRenovacao();
   if (tab === 'cobrancas') preencherConfigMP();
   if (tab === 'clientes') renderListaClientes();
-  const titles = { dashboard: 'Dashboard', contratos: 'Contratos', cobrancas: 'Cobranças', clientes: 'Clientes', recibos: 'Recibos', pedidos: 'Pedidos', renovacao: 'Minha assinatura', instrucoes: 'Como usar' };
+  if (tab === 'manutencao') { bloquearManutencao(); }
+  const titles = { dashboard: 'Dashboard', contratos: 'Contratos', cobrancas: 'Cobranças', clientes: 'Clientes', recibos: 'Recibos', pedidos: 'Pedidos', renovacao: 'Minha assinatura', instrucoes: 'Como usar', manutencao: 'Manutenção' };
   document.getElementById('dash-title').textContent = titles[tab];
   const sb = document.getElementById('sidebar');
   if (window.innerWidth < 768 && sb && !sb.classList.contains('hidden')) {
@@ -1262,21 +1383,57 @@ function updateProgressBar() {
 function toggleParcelas() {
   const pgto = document.getElementById('ct-pgto').value;
   const campo = document.getElementById('campo-parcelas');
-  const prev = document.getElementById('parcelas-preview');
   if (pgto === 'Parcelado') {
     campo.classList.remove('hidden');
+    const hoje = new Date().toISOString().split('T')[0];
+    const pi = document.getElementById('ct-parcela-inicio');
+    if (!pi.value) pi.value = hoje;
     atualizarPreviewParcelas();
   } else {
     campo.classList.add('hidden');
-    prev.textContent = '';
   }
 }
 
 function atualizarPreviewParcelas() {
   const valor = parseFloat(document.getElementById('ct-valor').value) || 0;
   const n = parseInt(document.getElementById('ct-parcelas').value) || 2;
-  const parc = (valor / n).toFixed(2).replace('.', ',');
-  document.getElementById('parcelas-preview').textContent = n + 'x de R$' + parc + ' — cobranças geradas automaticamente mês a mês';
+  const inicioStr = document.getElementById('ct-parcela-inicio').value;
+  const vlrUnit = (valor / n).toFixed(2);
+  const vlrUnitFmt = 'R$' + vlrUnit.replace('.', ',');
+
+  document.getElementById('valor-parcela-unit').textContent = vlrUnitFmt;
+
+  if (!inicioStr) {
+    document.getElementById('tabela-parcelas').classList.add('hidden');
+    return;
+  }
+
+  const baseDate = new Date(inicioStr + 'T12:00:00');
+  let rows = '';
+  for (let i = 0; i < n; i++) {
+    const d = new Date(baseDate);
+    d.setMonth(d.getMonth() + i);
+    const vencFmt = d.toLocaleDateString('pt-BR');
+    const isFirst = i === 0;
+    rows += `<div class="flex items-center justify-between px-4 py-2.5 ${i % 2 === 0 ? 'bg-gray-50' : 'bg-white'}">
+      <div class="flex items-center gap-3">
+        <span class="w-6 h-6 rounded-full bg-green-100 text-green-700 text-xs font-bold flex items-center justify-center flex-shrink-0">${i+1}</span>
+        <span class="text-sm text-gray-700">${i+1}ª parcela${isFirst ? ' <span class="text-xs text-blue-600">(1ª cobrança)</span>' : ''}</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="text-xs text-gray-400">Vence em ${vencFmt}</span>
+        <span class="font-bold text-gray-800">${vlrUnitFmt}</span>
+      </div>
+    </div>`;
+  }
+  const total = 'R$' + valor.toFixed(2).replace('.', ',');
+  rows += `<div class="flex items-center justify-between px-4 py-2.5 bg-green-50 border-t border-green-200">
+    <span class="text-sm font-bold text-green-700">Total</span>
+    <span class="font-black text-green-700">${total}</span>
+  </div>`;
+
+  document.getElementById('parcelas-lista').innerHTML = rows;
+  document.getElementById('tabela-parcelas').classList.remove('hidden');
 }
 
 function mascaraCPF(el) {
@@ -1324,6 +1481,7 @@ function getContratoData() {
     valor: document.getElementById('ct-valor').value,
     pgto: document.getElementById('ct-pgto').value,
     parcelas: parseInt(document.getElementById('ct-parcelas')?.value) || 1,
+    parcelaInicio: document.getElementById('ct-parcela-inicio')?.value || '',
     inicio: document.getElementById('ct-inicio').value,
     entrega: document.getElementById('ct-entrega').value,
     data: new Date().toLocaleDateString('pt-BR'),
@@ -1343,7 +1501,7 @@ function renderPreviewContrato() {
     <div class="mb-3"><b>CONTRATADO (Prestador):</b> ${d.prestNome} — CPF/CNPJ: ${d.prestDoc} — ${d.prestEnd} — Tel: ${d.prestTel}</div>
     <div class="mb-3"><b>CONTRATANTE (Cliente):</b> ${d.cliNome} — CPF: ${d.cliDoc} — Tel: ${d.cliTel} — ${d.cliEnd}</div>
     <div class="mb-2"><b>SERVIÇO CONTRATADO:</b> ${d.desc}</div>
-    <div class="mb-2"><b>VALOR:</b> R$ ${parseFloat(d.valor).toFixed(2).replace('.', ',')} — Forma de pagamento: ${d.pgto === 'Parcelado' ? d.pgto + ' (' + d.parcelas + 'x de R$' + (parseFloat(d.valor)/d.parcelas).toFixed(2).replace('.',',') + ')' : d.pgto}</div>
+    <div class="mb-2"><b>VALOR:</b> R$ ${parseFloat(d.valor).toFixed(2).replace('.', ',')} — ${d.pgto === 'Parcelado' ? d.parcelas + 'x de R$' + (parseFloat(d.valor)/d.parcelas).toFixed(2).replace('.',',') + ' (venc. a partir de ' + formatDate(d.parcelaInicio || d.inicio) + ')' : d.pgto}</div>
     <div class="mb-2"><b>PRAZO:</b> Início em ${formatDate(d.inicio)}, entrega prevista em ${formatDate(d.entrega)}.</div>
     <div class="mb-2"><b>RESCISÃO:</b> Em caso de rescisão pelo CONTRATANTE, fica estabelecida multa de 20% sobre o valor total do contrato.</div>
     <div class="mb-2"><b>FORO:</b> Fica eleito o foro da comarca do CONTRATADO para dirimir quaisquer dúvidas.</div>
@@ -1395,7 +1553,7 @@ function gerarContratosPDF() {
   doc.line(15, y, 195, y); y += 6;
   section('CLÁUSULA 1ª — SERVIÇO CONTRATADO', d.desc);
   const pgtoDesc = d.pgto === 'Parcelado'
-    ? `Parcelado em ${d.parcelas}x de R$ ${(parseFloat(d.valor)/d.parcelas).toFixed(2).replace('.',',')} com vencimento mensal a partir de ${formatDate(d.inicio)}.`
+    ? `Parcelado em ${d.parcelas}x de R$ ${(parseFloat(d.valor)/d.parcelas).toFixed(2).replace('.',',')} com vencimento mensal a partir de ${formatDate(d.parcelaInicio || d.inicio)}.`
     : d.pgto + '.';
   section('CLÁUSULA 2ª — VALOR E PAGAMENTO', `O valor total pelos serviços é de R$ ${parseFloat(d.valor).toFixed(2).replace('.', ',')} (${numPorExtenso(parseFloat(d.valor))}).\nForma de pagamento: ${pgtoDesc}`);
   section('CLÁUSULA 3ª — PRAZO', `O serviço terá início em ${formatDate(d.inicio)} e entrega prevista em ${formatDate(d.entrega)}.`);
@@ -1457,12 +1615,15 @@ function salvarContrato() {
   } else if (d.pgto === 'Parcelado' && d.parcelas > 1) {
     const n = d.parcelas;
     const vlrParc = (parseFloat(d.valor) / n).toFixed(2);
-    const baseDate = new Date(d.inicio + 'T12:00:00');
+    const parcelaInicio = d.parcelaInicio || d.inicio;
+    const baseDate = new Date(parcelaInicio + 'T12:00:00');
+    const criados = [];
     for (let i = 0; i < n; i++) {
       const venc = new Date(baseDate);
       venc.setMonth(venc.getMonth() + i);
-      cobrancas.unshift({ id: contratoId + i + 1, contratoId, cliente: d.cliNome, desc: d.desc + ` — ${i+1}ª parcela de ${n}x`, valor: vlrParc, vencimento: venc.toISOString().split('T')[0], obs: 'Gerada automaticamente', data: hoje, status: 'Pendente' });
+      criados.push({ id: contratoId + i + 1, contratoId, cliente: d.cliNome, desc: d.desc + ` — ${i+1}ª de ${n}x`, valor: vlrParc, vencimento: venc.toISOString().split('T')[0], obs: 'Gerada automaticamente', data: hoje, status: 'Pendente' });
     }
+    criados.reverse().forEach(c => cobrancas.unshift(c));
   } else {
     cobrancas.unshift({ id: contratoId+1, contratoId, cliente: d.cliNome, desc: d.desc, valor: d.valor, vencimento: d.entrega, obs: '', data: hoje, status: 'Pendente' });
   }
@@ -2399,6 +2560,8 @@ function resetarFormContrato() {
   });
   document.getElementById('ct-pgto').value = '';
   document.getElementById('campo-parcelas').classList.add('hidden');
+  document.getElementById('tabela-parcelas').classList.add('hidden');
+  const pi = document.getElementById('ct-parcela-inicio'); if (pi) pi.value = '';
   document.getElementById('step1-erro').classList.add('hidden');
   preencherCamposUsuario();
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2659,6 +2822,109 @@ function gerarContratosPDFById(contratoId) {
   doc.text(`Gerado em ${d.data} pelo ContratAí — contratai.com.br`, 105, 285, { align: 'center' });
   doc.save('contrato_' + d.cliNome.replace(/ /g, '_') + '.pdf');
   showToast('Contrato baixado!');
+}
+
+function verificarSenhaAdmin() {
+  const senha = document.getElementById('manut-senha').value;
+  const senhaCorreta = getData('admin-senha', 'admin123');
+  if (senha === senhaCorreta) {
+    document.getElementById('manut-bloqueado').classList.add('hidden');
+    document.getElementById('manut-painel').classList.remove('hidden');
+    renderManutencao();
+    document.getElementById('manut-senha-erro').classList.add('hidden');
+  } else {
+    document.getElementById('manut-senha-erro').classList.remove('hidden');
+    document.getElementById('manut-senha').value = '';
+  }
+}
+
+function bloquearManutencao() {
+  document.getElementById('manut-bloqueado').classList.remove('hidden');
+  document.getElementById('manut-painel').classList.add('hidden');
+  document.getElementById('manut-senha').value = '';
+}
+
+function alterarSenhaAdmin() {
+  const nova = document.getElementById('manut-nova-senha').value.trim();
+  const conf = document.getElementById('manut-confirma-senha').value.trim();
+  if (!nova) { showToast('Digite a nova senha.', 'red'); return; }
+  if (nova !== conf) { showToast('As senhas não coincidem.', 'red'); return; }
+  if (nova.length < 4) { showToast('A senha deve ter pelo menos 4 caracteres.', 'red'); return; }
+  setData('admin-senha', nova);
+  document.getElementById('manut-nova-senha').value = '';
+  document.getElementById('manut-confirma-senha').value = '';
+  showToast('Senha alterada com sucesso!');
+}
+
+function renderManutencao() {
+  const contratos = getData('contratos', []);
+  const cobrancas = getData('cobrancas', []);
+  const clientes  = getData('clientes', []);
+  const recibos   = getData('recibos', []);
+
+  function renderLista(elId, items, labelFn) {
+    const el = document.getElementById(elId);
+    if (!items.length) { el.innerHTML = '<p class="text-gray-400 text-sm py-2">Nenhum item cadastrado.</p>'; return; }
+    el.innerHTML = items.map((item, i) => `
+      <label class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 cursor-pointer border border-transparent hover:border-gray-200 transition">
+        <input type="checkbox" class="manut-check-${elId.replace('manut-lista-','')}" value="${item.id}" data-idx="${i}" style="width:16px;height:16px;accent-color:#16a34a">
+        <span class="text-sm text-gray-700 flex-1">${labelFn(item)}</span>
+      </label>`).join('');
+  }
+
+  renderLista('manut-lista-contratos', contratos, c => `<span class="font-mono text-xs text-gray-400">${c.num||''}</span> ${c.cliNome} — R$${parseFloat(c.valor||0).toFixed(2).replace('.',',')} · ${c.data}`);
+  renderLista('manut-lista-cobrancas', cobrancas, c => `${c.cliente} — R$${parseFloat(c.valor||0).toFixed(2).replace('.',',')} · ${c.status} · Vence ${formatDate(c.vencimento)}`);
+  renderLista('manut-lista-clientes',  clientes,  c => `${c.codigo||''} ${c.nome} ${c.tel ? '· '+c.tel : ''}`);
+  renderLista('manut-lista-recibos',   recibos,   r => `Nº ${r.num} · ${r.cliente} · R$${parseFloat(r.valor||0).toFixed(2).replace('.',',')} · ${formatDate(r.data)}`);
+}
+
+function selecionarTodosManut(tipo) {
+  document.querySelectorAll(`.manut-check-${tipo}`).forEach(cb => cb.checked = true);
+}
+
+function excluirSelecionadosManut(tipo) {
+  const selecionados = [...document.querySelectorAll(`.manut-check-${tipo}:checked`)].map(cb => String(cb.value));
+  if (!selecionados.length) { showToast('Selecione ao menos um item.', 'red'); return; }
+  if (!confirm(`Excluir ${selecionados.length} item(s) selecionado(s)? Esta ação não pode ser desfeita.`)) return;
+
+  if (tipo === 'contratos') {
+    const contratoIds = selecionados;
+    let contratos = getData('contratos', []);
+    let cobrancas = getData('cobrancas', []);
+    contratos = contratos.filter(c => !contratoIds.includes(String(c.id)));
+    cobrancas = cobrancas.filter(c => !contratoIds.includes(String(c.contratoId)));
+    setData('contratos', contratos);
+    setData('cobrancas', cobrancas);
+  } else if (tipo === 'cobrancas') {
+    let cobrancas = getData('cobrancas', []);
+    cobrancas = cobrancas.filter(c => !selecionados.includes(String(c.id)));
+    setData('cobrancas', cobrancas);
+  } else if (tipo === 'clientes') {
+    let clientes = getData('clientes', []);
+    clientes = clientes.filter(c => !selecionados.includes(String(c.id)));
+    setData('clientes', clientes);
+  } else if (tipo === 'recibos') {
+    let recibos = getData('recibos', []);
+    recibos = recibos.filter(r => !selecionados.includes(String(r.id)));
+    setData('recibos', recibos);
+  }
+
+  renderManutencao();
+  renderListaContratos(); renderListaCobrancas(); renderListaClientes();
+  renderListaRecibos(); renderListaPedidos(); atualizarStats(); renderDashboard();
+  popularSelectsCliente();
+  showToast(`${selecionados.length} item(s) excluído(s).`);
+}
+
+function apagarTudo() {
+  if (!confirm('ATENÇÃO: Isso vai apagar TODOS os contratos, cobranças, clientes e recibos permanentemente. Tem certeza?')) return;
+  if (!confirm('Última confirmação: todos os dados serão perdidos. Continuar?')) return;
+  ['contratos','cobrancas','clientes','recibos'].forEach(k => setData(k, []));
+  renderManutencao();
+  renderListaContratos(); renderListaCobrancas(); renderListaClientes();
+  renderListaRecibos(); renderListaPedidos(); atualizarStats(); renderDashboard();
+  popularSelectsCliente();
+  showToast('Todos os dados foram apagados.');
 }
 
 function verTutorial() {
