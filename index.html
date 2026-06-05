@@ -1416,17 +1416,34 @@ async function login() {
   }
 }
 
-function irParaCheckoutMP() {
-  if (CONFIG.mp.checkoutLink) {
-    // Salva o email no localStorage para recuperar após retorno do MP
-    const user = getData('user', {});
-    localStorage.setItem('_pag_pending_email', user.email || '');
-    window.location.href = CONFIG.mp.checkoutLink;
-  } else {
-    // Fallback: mostrar PIX manual
+async function irParaCheckoutMP() {
+  const btn = document.getElementById('btn-checkout-mp');
+  btn.textContent = '⏳ Gerando link de pagamento...';
+  btn.disabled = true;
+
+  const user = getData('user', {});
+
+  try {
+    const res = await fetch('/.netlify/functions/criar-preferencia', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: user.email || '' }),
+    });
+    const data = await res.json();
+
+    if (!res.ok || !data.init_point) {
+      throw new Error(data.error || 'Erro ao gerar link');
+    }
+
+    window.location.href = data.init_point;
+  } catch (err) {
+    btn.textContent = '💳 Pagar com Mercado Pago';
+    btn.disabled = false;
+    // Fallback: PIX manual
     document.getElementById('pag-pix-manual').classList.remove('hidden');
     document.getElementById('btn-checkout-mp').classList.add('hidden');
-    showToast('Configure o link do Mercado Pago no CONFIG.mp.checkoutLink', 'red');
+    document.getElementById('pag-erro').textContent = 'Não foi possível gerar o link automático. Use o PIX abaixo.';
+    document.getElementById('pag-erro').classList.remove('hidden');
   }
 }
 
@@ -1440,34 +1457,25 @@ async function verificarPagamentoManual() {
   }
   erro.classList.add('hidden');
 
-  if (CONFIG.mp.accessToken) {
-    document.getElementById('pag-opcoes').classList.add('hidden');
-    document.getElementById('pag-verificando').classList.remove('hidden');
-    try {
-      const res = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
-        headers: { Authorization: `Bearer ${CONFIG.mp.accessToken}` },
-      });
-      const pagamento = await res.json();
-      document.getElementById('pag-verificando').classList.add('hidden');
-      if (pagamento.status === 'approved') {
-        await ativarAssinatura(paymentId);
-        document.getElementById('pag-aprovado').classList.remove('hidden');
-      } else {
-        document.getElementById('pag-opcoes').classList.remove('hidden');
-        erro.textContent = `Pagamento com status "${pagamento.status}". Aguarde a aprovação ou verifique o ID.`;
-        erro.classList.remove('hidden');
-      }
-    } catch(e) {
-      document.getElementById('pag-verificando').classList.add('hidden');
+  document.getElementById('pag-opcoes').classList.add('hidden');
+  document.getElementById('pag-verificando').classList.remove('hidden');
+  try {
+    const res = await fetch(`/.netlify/functions/verificar-pagamento?payment_id=${paymentId}`);
+    const pagamento = await res.json();
+    document.getElementById('pag-verificando').classList.add('hidden');
+    if (pagamento.approved) {
+      await ativarAssinatura(paymentId);
+      document.getElementById('pag-aprovado').classList.remove('hidden');
+    } else {
       document.getElementById('pag-opcoes').classList.remove('hidden');
-      erro.textContent = 'Erro ao verificar pagamento. Tente novamente.';
+      erro.textContent = `Pagamento com status "${pagamento.status}". Aguarde a aprovação ou verifique o ID.`;
       erro.classList.remove('hidden');
     }
-  } else {
-    // Sem token configurado: aceitar manualmente (modo degradado)
-    await ativarAssinatura(paymentId);
-    document.getElementById('pag-opcoes').classList.add('hidden');
-    document.getElementById('pag-aprovado').classList.remove('hidden');
+  } catch(e) {
+    document.getElementById('pag-verificando').classList.add('hidden');
+    document.getElementById('pag-opcoes').classList.remove('hidden');
+    erro.textContent = 'Erro ao verificar pagamento. Tente novamente.';
+    erro.classList.remove('hidden');
   }
 }
 
@@ -3205,31 +3213,21 @@ function fecharModal() {
     if (returnStatus === 'approved') {
       document.getElementById('pag-opcoes').classList.add('hidden');
       document.getElementById('pag-verificando').classList.remove('hidden');
-      // Verifica com a API do MP se token configurado
-      if (CONFIG.mp.accessToken) {
-        try {
-          const res = await fetch(`https://api.mercadopago.com/v1/payments/${returnPaymentId}`, {
-            headers: { Authorization: `Bearer ${CONFIG.mp.accessToken}` },
-          });
-          const pagamento = await res.json();
-          document.getElementById('pag-verificando').classList.add('hidden');
-          if (pagamento.status === 'approved') {
-            await ativarAssinatura(returnPaymentId);
-            document.getElementById('pag-aprovado').classList.remove('hidden');
-          } else {
-            document.getElementById('pag-opcoes').classList.remove('hidden');
-            document.getElementById('pag-erro').textContent = `Pagamento com status "${pagamento.status}". Aguarde ou entre em contato.`;
-            document.getElementById('pag-erro').classList.remove('hidden');
-          }
-        } catch(e) {
-          document.getElementById('pag-verificando').classList.add('hidden');
-          document.getElementById('pag-opcoes').classList.remove('hidden');
-        }
-      } else {
-        // Sem token: aceitar o retorno do MP como aprovação
+      try {
+        const res = await fetch(`/.netlify/functions/verificar-pagamento?payment_id=${returnPaymentId}`);
+        const pagamento = await res.json();
         document.getElementById('pag-verificando').classList.add('hidden');
-        await ativarAssinatura(returnPaymentId);
-        document.getElementById('pag-aprovado').classList.remove('hidden');
+        if (pagamento.approved) {
+          await ativarAssinatura(returnPaymentId);
+          document.getElementById('pag-aprovado').classList.remove('hidden');
+        } else {
+          document.getElementById('pag-opcoes').classList.remove('hidden');
+          document.getElementById('pag-erro').textContent = `Pagamento com status "${pagamento.status}". Aguarde ou entre em contato.`;
+          document.getElementById('pag-erro').classList.remove('hidden');
+        }
+      } catch(e) {
+        document.getElementById('pag-verificando').classList.add('hidden');
+        document.getElementById('pag-opcoes').classList.remove('hidden');
       }
     } else if (returnStatus === 'pending' || returnStatus === 'in_process') {
       document.getElementById('pag-verificando').classList.add('hidden');
